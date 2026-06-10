@@ -103,6 +103,11 @@ resource "aws_ecs_service" "api" {
   desired_count   = var.api_desired_count
   launch_type     = "FARGATE"
 
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
   network_configuration {
     subnets          = data.terraform_remote_state.network.outputs.private_app_subnet_ids
     security_groups  = [aws_security_group.ecs.id]
@@ -198,6 +203,11 @@ resource "aws_ecs_service" "free_worker" {
   desired_count   = var.free_worker_desired_count
   launch_type     = "FARGATE"
 
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
   network_configuration {
     subnets          = data.terraform_remote_state.network.outputs.private_app_subnet_ids
     security_groups  = [aws_security_group.ecs.id]
@@ -282,6 +292,11 @@ resource "aws_ecs_service" "paid_worker" {
   task_definition = aws_ecs_task_definition.paid_worker.arn
   desired_count   = var.paid_worker_desired_count
   launch_type     = "FARGATE"
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
 
   network_configuration {
     subnets          = data.terraform_remote_state.network.outputs.private_app_subnet_ids
