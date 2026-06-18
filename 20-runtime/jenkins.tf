@@ -147,6 +147,13 @@ resource "aws_iam_policy" "jenkins_deploy" {
       {
         Effect = "Allow"
         Action = [
+          "bedrock:InvokeModel"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "sts:GetCallerIdentity"
         ]
         Resource = "*"
