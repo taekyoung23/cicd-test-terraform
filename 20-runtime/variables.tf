@@ -72,6 +72,28 @@ variable "worker_image_tag" {
   description = "Worker image tag. Use git SHA tag."
 }
 
+variable "ecr_build_image_retention_count" {
+  type        = number
+  default     = 30
+  description = "Number of recent build-* ECR images to retain as a dev rollback buffer."
+
+  validation {
+    condition     = var.ecr_build_image_retention_count > 0 && floor(var.ecr_build_image_retention_count) == var.ecr_build_image_retention_count
+    error_message = "ecr_build_image_retention_count must be a positive integer."
+  }
+}
+
+variable "ecr_untagged_image_retention_days" {
+  type        = number
+  default     = 7
+  description = "Number of days to retain untagged ECR images before expiration."
+
+  validation {
+    condition     = var.ecr_untagged_image_retention_days > 0 && floor(var.ecr_untagged_image_retention_days) == var.ecr_untagged_image_retention_days
+    error_message = "ecr_untagged_image_retention_days must be a positive integer."
+  }
+}
+
 variable "api_container_port" {
   type    = number
   default = 8000
