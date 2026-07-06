@@ -148,6 +148,14 @@ resource "aws_ecs_task_definition" "free_worker" {
       image     = local.worker_image
       essential = true
 
+      healthCheck = {
+        command     = ["CMD-SHELL", "python /workspace/healthcheck.py || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 120
+      }
+
       environment = [
         { name = "APP_ENV", value = "prod" },
         { name = "WORKER_MODE", value = "aws" },
@@ -237,6 +245,14 @@ resource "aws_ecs_task_definition" "paid_worker" {
       name      = "paid-worker"
       image     = local.worker_image
       essential = true
+
+      healthCheck = {
+        command     = ["CMD-SHELL", "python /workspace/healthcheck.py || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 120
+      }
 
       environment = [
         { name = "APP_ENV", value = "prod" },

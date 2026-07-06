@@ -167,6 +167,50 @@ resource "aws_iam_role_policy_attachment" "jenkins_deploy" {
   policy_arn = aws_iam_policy.jenkins_deploy.arn
 }
 
+resource "aws_iam_policy" "jenkins_frontend_deploy" {
+  name = "${var.project_name}-${var.env}-jenkins-frontend-deploy-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "FrontendBucketList"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:ListBucketVersions"
+        ]
+        Resource = "arn:aws:s3:::mzc-securevoiceguard-web-dev"
+      },
+      {
+        Sid    = "FrontendObjectDeploy"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = "arn:aws:s3:::mzc-securevoiceguard-web-dev/*"
+      },
+      {
+        Sid    = "FrontendCloudFrontInvalidation"
+        Effect = "Allow"
+        Action = [
+          "cloudfront:CreateInvalidation",
+          "cloudfront:GetInvalidation"
+        ]
+        Resource = "arn:aws:cloudfront::${var.account_id}:distribution/E2ZAHL4TTM1M8O"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "jenkins_frontend_deploy" {
+  role       = aws_iam_role.jenkins.name
+  policy_arn = aws_iam_policy.jenkins_frontend_deploy.arn
+}
+
 resource "aws_iam_instance_profile" "jenkins" {
   name = "${var.project_name}-${var.env}-jenkins-instance-profile"
   role = aws_iam_role.jenkins.name
